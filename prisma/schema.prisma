@@ -11,22 +11,74 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
+  id           Int        @id @default(autoincrement())
   firstName    String
   lastName     String
-  email        String  @unique
+  email        String     @unique
   password     String
-  idCard       String  @unique
+  idCard       String     @unique
   mobile       String
   prefixName   String
   profileImage String?
+  UserRoom     UserRoom[]
 }
 
 model Admin {
-  id        Int    @id @default(autoincrement())
-  password  String
-  email     String @unique
-  mobile    String
-  firstName String
-  lastName  String
+  id         Int    @id @default(autoincrement())
+  password   String
+  email      String @unique
+  mobile     String
+  prefixName String
+  firstName  String
+  lastName   String
+}
+
+model Room {
+  id         Int        @id @default(autoincrement())
+  name       String
+  price      Int
+  floor      Int
+  statusRoom statusRoom
+  userRoom   UserRoom[]
+}
+
+enum statusRoom {
+  BUSY
+  IDLE
+}
+
+model UserRoom {
+  id            Int             @id @default(autoincrement())
+  userIn        DateTime        @default(now())
+  userOut       DateTime?
+  statusPayment statusRoom
+  roomId        Int
+  room          Room            @relation(fields: [roomId], references: [id])
+  userId        Int
+  user          User            @relation(fields: [userId], references: [id])
+  MeterWater    MeterWater[]
+  MeterElectric MeterElectric[]
+}
+
+enum statusPayment {
+  PAID
+  UNPAID
+}
+
+model MeterWater {
+  id         Int      @id @default(autoincrement())
+  priceUnit  Int
+  unit       Int
+  createAt   DateTime
+  userRoomId Int
+  UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
+}
+
+model MeterElectric {
+  id         Int      @id @default(autoincrement())
+  priceUnit  Int
+  unit       Int
+  createAt   DateTime
+  userRoomId Int
+  UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
 }
