@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 exports.registerAdmin = async (req, res, next) => {
   try {
     const { value, error } = registerSchema.validate(req.body);
+
     if (error) {
       return next(error);
     }
@@ -93,6 +94,10 @@ exports.loginUser = async (req, res, next) => {
 exports.loginAdmin = async (req, res, next) => {
   try {
     const { value, error } = loginSchema.validate(req.body);
+    console.log(
+      "🚀 ~ file: auth-controller.js:97 ~ exports.loginAdmin= ~ value:",
+      value
+    );
 
     if (error) {
       return next(error);
