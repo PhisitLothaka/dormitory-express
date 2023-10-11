@@ -28,6 +28,7 @@ model Admin {
   password   String
   email      String @unique
   mobile     String
+  idCard     String @unique
   prefixName String
   firstName  String
   lastName   String

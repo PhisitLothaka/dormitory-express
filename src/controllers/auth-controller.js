@@ -1,14 +1,12 @@
-const {
-  registerAdminSchema,
-  registerUserSchema,
-} = require("../validators/auth-validator");
+const { registerSchema, loginSchema } = require("../validators/auth-validator");
+const createError = require("../utils/create-error");
 const prisma = require("../model/prisma");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.registerAdmin = async (req, res, next) => {
   try {
-    const { value, error } = registerAdminSchema.validate(req.body);
+    const { value, error } = registerSchema.validate(req.body);
     if (error) {
       return next(error);
     }
@@ -34,7 +32,7 @@ exports.registerAdmin = async (req, res, next) => {
 
 exports.registerUser = async (req, res, next) => {
   try {
-    const { value, error } = registerUserSchema.validate(req.body);
+    const { value, error } = registerSchema.validate(req.body);
     if (error) {
       return next(error);
     }
@@ -50,6 +48,74 @@ exports.registerUser = async (req, res, next) => {
       {
         expiresIn: process.env.JWT_EXPIRE,
       }
+    );
+    delete user.password;
+    res.status(201).json({ accessToken, user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.loginUser = async (req, res, next) => {
+  try {
+    const { value, error } = loginSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+    const user = await prisma.user.findFirst({
+      where: {
+        email: value.email,
+      },
+    });
+
+    if (!user) {
+      return next(createError("invalid credential", 400));
+    }
+    const isMatch = await bcrypt.compare(value.password, user.password);
+    if (!isMatch) {
+      return next(createError("invalid credential", 400));
+    }
+
+    const payload = { userId: user.id };
+    const accessToken = jwt.sign(
+      payload,
+      process.env.JWT_SECRET_KEY || "12jkdsfasiodfslkd2i3",
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
+    delete user.password;
+    res.status(201).json({ accessToken, user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.loginAdmin = async (req, res, next) => {
+  try {
+    const { value, error } = loginSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+    const user = await prisma.admin.findFirst({
+      where: {
+        email: value.email,
+      },
+    });
+
+    if (!user) {
+      return next(createError("invalid credential", 400));
+    }
+    const isMatch = await bcrypt.compare(value.password, user.password);
+    if (!isMatch) {
+      return next(createError("invalid credential", 400));
+    }
+
+    const payload = { userId: user.id };
+    const accessToken = jwt.sign(
+      payload,
+      process.env.JWT_SECRET_KEY || "12jkdsfasiodfslkd2i3",
+      { expiresIn: process.env.JWT_EXPIRE }
     );
     delete user.password;
     res.status(201).json({ accessToken, user });
