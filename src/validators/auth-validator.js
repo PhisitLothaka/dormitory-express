@@ -20,7 +20,6 @@ const registerSchema = Joi.object({
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
-  prefixName: Joi.required(),
 });
 exports.registerSchema = registerSchema;
 

@@ -18,20 +18,18 @@ model User {
   password     String
   idCard       String     @unique
   mobile       String
-  prefixName   String
   profileImage String?
   UserRoom     UserRoom[]
 }
 
 model Admin {
-  id         Int    @id @default(autoincrement())
-  password   String
-  email      String @unique
-  mobile     String
-  idCard     String @unique
-  prefixName String
-  firstName  String
-  lastName   String
+  id        Int    @id @default(autoincrement())
+  password  String
+  email     String @unique
+  mobile    String
+  idCard    String @unique
+  firstName String
+  lastName  String
 }
 
 model Room {
