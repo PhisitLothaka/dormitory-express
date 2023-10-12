@@ -94,10 +94,6 @@ exports.loginUser = async (req, res, next) => {
 exports.loginAdmin = async (req, res, next) => {
   try {
     const { value, error } = loginSchema.validate(req.body);
-    console.log(
-      "🚀 ~ file: auth-controller.js:97 ~ exports.loginAdmin= ~ value:",
-      value
-    );
 
     if (error) {
       return next(error);
@@ -127,4 +123,8 @@ exports.loginAdmin = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.getMe = (req, res, next) => {
+  res.status(200).json({ user: req.user });
 };
