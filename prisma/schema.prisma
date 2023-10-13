@@ -23,13 +23,16 @@ model User {
 }
 
 model Admin {
-  id        Int    @id @default(autoincrement())
-  password  String
-  email     String @unique
-  mobile    String
-  idCard    String @unique
-  firstName String
-  lastName  String
+  id            Int             @id @default(autoincrement())
+  password      String
+  email         String          @unique
+  mobile        String
+  idCard        String          @unique
+  firstName     String
+  lastName      String
+  Room          Room[]
+  MeterWater    MeterWater[]
+  MeterElectric MeterElectric[]
 }
 
 model Room {
@@ -39,6 +42,8 @@ model Room {
   floor      Int
   statusRoom statusRoom
   userRoom   UserRoom[]
+  adminId    Int
+  admin      Admin      @relation(fields: [adminId], references: [id])
 }
 
 enum statusRoom {
@@ -71,6 +76,8 @@ model MeterWater {
   createAt   DateTime
   userRoomId Int
   UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
+  adminId    Int
+  admin      Admin    @relation(fields: [adminId], references: [id])
 }
 
 model MeterElectric {
@@ -80,4 +87,6 @@ model MeterElectric {
   createAt   DateTime
   userRoomId Int
   UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
+  adminId    Int
+  admin      Admin    @relation(fields: [adminId], references: [id])
 }
