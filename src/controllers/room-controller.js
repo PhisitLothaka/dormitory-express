@@ -3,6 +3,23 @@ const error = require("../middlewares/error");
 const prisma = require("../model/prisma");
 const { checkRoomSchema } = require("../validators/room-validator");
 
+exports.getRoom = async (req, res, next) => {
+  try {
+    const room = await prisma.room.findMany({
+      where: {
+        adminId: req.user.id,
+      },
+    });
+    res.status(200).json({ room });
+  } catch (err) {
+    console.log(
+      "🚀 ~ file: room-controller.js:9 ~ exports.getRoom= ~ err:",
+      err
+    );
+    next(err);
+  }
+};
+
 exports.createRoom = async (req, res, next) => {
   try {
     const { value, error } = checkRoomSchema.validate(req.body);
