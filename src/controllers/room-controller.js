@@ -1,19 +1,44 @@
-const { STATUS_IDLE } = require("../config/constants");
+const { STATUS_IDLE, STATUS_PAID } = require("../config/constants");
 const error = require("../middlewares/error");
 const prisma = require("../model/prisma");
 const { checkRoomSchema } = require("../validators/room-validator");
 
+//get จากตาราง userRoom
 exports.getRoom = async (req, res, next) => {
   try {
-    const room = await prisma.room.findMany({
+    const rooms = await prisma.room.findMany({
       where: {
         adminId: req.user.id,
       },
+      orderBy: { name: "asc" },
     });
-    res.status(200).json({ room });
+    res.status(200).json({ rooms });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.addUser = async (req, res, next) => {
+  try {
+    const { idCardUser, idRoom } = req.body;
+    const findUser = await prisma.user.findUnique({
+      where: { idCard: idCardUser },
+    });
+    const findRoom = await prisma.room.findUnique({
+      where: { id: idRoom },
+    });
+    await prisma.userRoom.create({
+      data: {
+        statusPayment: STATUS_PAID,
+        roomId: findRoom.id,
+        userId: findUser.id,
+      },
+    });
+
+    res.status(200).json({ findUser, findRoom });
   } catch (err) {
     console.log(
-      "🚀 ~ file: room-controller.js:9 ~ exports.getRoom= ~ err:",
+      "🚀 ~ file: room-controller.js:23 ~ exports.addUser= ~ err:",
       err
     );
     next(err);
@@ -61,6 +86,10 @@ exports.editRoom = async (req, res, next) => {
     });
     res.status(201).json({ message: "Room update", roomEdit });
   } catch (err) {
+    console.log(
+      "🚀 ~ file: room-controller.js:62 ~ exports.editRoom= ~ err:",
+      err
+    );
     next(err);
   }
 };

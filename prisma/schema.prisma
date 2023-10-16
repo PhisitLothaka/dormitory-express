@@ -55,7 +55,7 @@ model UserRoom {
   id            Int             @id @default(autoincrement())
   userIn        DateTime        @default(now())
   userOut       DateTime?
-  statusPayment statusRoom
+  statusPayment statusPayment
   roomId        Int
   room          Room            @relation(fields: [roomId], references: [id])
   userId        Int
