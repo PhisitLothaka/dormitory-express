@@ -1,4 +1,8 @@
-const { STATUS_IDLE, STATUS_PAID } = require("../config/constants");
+const {
+  STATUS_IDLE,
+  STATUS_PAID,
+  STATUS_BUSY,
+} = require("../config/constants");
 const error = require("../middlewares/error");
 const prisma = require("../model/prisma");
 const { checkRoomSchema } = require("../validators/room-validator");
@@ -7,11 +11,15 @@ const { checkRoomSchema } = require("../validators/room-validator");
 exports.getRoom = async (req, res, next) => {
   try {
     const rooms = await prisma.room.findMany({
-      where: {
-        adminId: req.user.id,
+      include: {
+        userRoom: {
+          include: {
+            user: true,
+          },
+        },
       },
-      orderBy: { name: "asc" },
     });
+
     res.status(200).json({ rooms });
   } catch (err) {
     next(err);
@@ -27,7 +35,7 @@ exports.addUser = async (req, res, next) => {
     const findRoom = await prisma.room.findUnique({
       where: { id: idRoom },
     });
-    await prisma.userRoom.create({
+    const userRoom = await prisma.userRoom.create({
       data: {
         statusPayment: STATUS_PAID,
         roomId: findRoom.id,
@@ -35,12 +43,17 @@ exports.addUser = async (req, res, next) => {
       },
     });
 
+    if (userRoom.userId) {
+      await prisma.room.update({
+        data: {
+          statusRoom: STATUS_BUSY,
+        },
+        where: { id: userRoom.roomId },
+      });
+    }
+
     res.status(200).json({ findUser, findRoom });
   } catch (err) {
-    console.log(
-      "🚀 ~ file: room-controller.js:23 ~ exports.addUser= ~ err:",
-      err
-    );
     next(err);
   }
 };
