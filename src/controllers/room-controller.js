@@ -58,12 +58,35 @@ exports.addUser = async (req, res, next) => {
   }
 };
 
+exports.deleteUserRoom = async (req, res, next) => {
+  try {
+    const { userRoomId } = req.params;
+    console.log(
+      "🚀 ~ file: room-controller.js:64 ~ exports.deleteUserRoom ~ userRoomId:",
+      userRoomId
+    );
+    await prisma.userRoom.delete({
+      where: {
+        id: +userRoomId,
+      },
+    });
+    res.status(200).json({ message: "deleted" });
+  } catch (err) {
+    console.log(
+      "🚀 ~ file: room-controller.js:71 ~ exports.deleteUserRoom ~ err:",
+      err
+    );
+    next(err);
+  }
+};
+
 exports.createRoom = async (req, res, next) => {
   try {
     const { value, error } = checkRoomSchema.validate(req.body);
     if (error) {
       return next(error);
     }
+
     const createRoom = await prisma.room.create({
       data: {
         name: value.name,

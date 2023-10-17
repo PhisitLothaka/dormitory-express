@@ -7,6 +7,11 @@ const router = express.Router();
 router.get("/", authenticateMiddleware, roomController.getRoom);
 router.post("/", authenticateMiddleware, roomController.createRoom);
 router.post("/user", authenticateMiddleware, roomController.addUser);
+router.delete(
+  "/user/:userRoomId",
+  authenticateMiddleware,
+  roomController.deleteUserRoom
+);
 router.patch("/", authenticateMiddleware, roomController.editRoom);
 router.delete("/:roomId", authenticateMiddleware, roomController.deleteRoom);
 
