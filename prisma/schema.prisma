@@ -20,6 +20,7 @@ model User {
   mobile       String
   profileImage String?
   UserRoom     UserRoom[]
+  Sumarize     Sumarize[]
 }
 
 model Admin {
@@ -33,6 +34,7 @@ model Admin {
   Room          Room[]
   MeterWater    MeterWater[]
   MeterElectric MeterElectric[]
+  Sumarize      Sumarize[]
 }
 
 model Room {
@@ -44,6 +46,7 @@ model Room {
   userRoom   UserRoom[]
   adminId    Int
   admin      Admin      @relation(fields: [adminId], references: [id])
+  Sumarize   Sumarize[]
 }
 
 enum statusRoom {
@@ -73,7 +76,7 @@ model MeterWater {
   id         Int      @id @default(autoincrement())
   priceUnit  Int
   unit       Int
-  createAt   DateTime
+  createAt   DateTime @db.Date
   userRoomId Int
   UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
   adminId    Int
@@ -84,9 +87,23 @@ model MeterElectric {
   id         Int      @id @default(autoincrement())
   priceUnit  Int
   unit       Int
-  createAt   DateTime
+  createAt   DateTime @db.Date
   userRoomId Int
   UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
   adminId    Int
   admin      Admin    @relation(fields: [adminId], references: [id])
+}
+
+model Sumarize {
+  id           Int      @id @default(autoincrement())
+  unitWater    Int
+  unitElectric Int
+  priceRoom    Int
+  timeReceipt  DateTime @db.Date
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  roomId       Int
+  room         Room     @relation(fields: [roomId], references: [id])
+  adminId      Int
+  admin        Admin    @relation(fields: [adminId], references: [id])
 }

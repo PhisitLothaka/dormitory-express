@@ -11,6 +11,9 @@ const { checkRoomSchema } = require("../validators/room-validator");
 exports.getRoom = async (req, res, next) => {
   try {
     const rooms = await prisma.room.findMany({
+      where: {
+        adminId: req.user.id,
+      },
       include: {
         userRoom: {
           include: {
