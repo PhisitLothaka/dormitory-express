@@ -14,6 +14,9 @@ exports.getRoom = async (req, res, next) => {
       where: {
         adminId: req.user.id,
       },
+      orderBy: {
+        name: "asc",
+      },
       include: {
         userRoom: {
           include: {
@@ -43,6 +46,7 @@ exports.addUser = async (req, res, next) => {
         statusPayment: STATUS_PAID,
         roomId: findRoom.id,
         userId: findUser.id,
+        adminId: req.user.id,
       },
     });
 
@@ -55,8 +59,12 @@ exports.addUser = async (req, res, next) => {
       });
     }
 
-    res.status(200).json({ findUser, findRoom });
+    res.status(200).json({ message: "success" });
   } catch (err) {
+    console.log(
+      "🚀 ~ file: room-controller.js:60 ~ exports.addUser= ~ err:",
+      err
+    );
     next(err);
   }
 };

@@ -35,18 +35,21 @@ model Admin {
   MeterWater    MeterWater[]
   MeterElectric MeterElectric[]
   Sumarize      Sumarize[]
+  UserRoom      UserRoom[]
 }
 
 model Room {
-  id         Int        @id @default(autoincrement())
-  name       String
-  price      Int
-  floor      Int
-  statusRoom statusRoom
-  userRoom   UserRoom[]
-  adminId    Int
-  admin      Admin      @relation(fields: [adminId], references: [id])
-  Sumarize   Sumarize[]
+  id            Int             @id @default(autoincrement())
+  name          String
+  price         Int
+  floor         Int
+  statusRoom    statusRoom
+  userRoom      UserRoom[]
+  adminId       Int
+  admin         Admin           @relation(fields: [adminId], references: [id])
+  Sumarize      Sumarize[]
+  MeterWater    MeterWater[]
+  MeterElectric MeterElectric[]
 }
 
 enum statusRoom {
@@ -55,16 +58,16 @@ enum statusRoom {
 }
 
 model UserRoom {
-  id            Int             @id @default(autoincrement())
-  userIn        DateTime        @default(now())
+  id            Int           @id @default(autoincrement())
+  userIn        DateTime      @default(now())
   userOut       DateTime?
   statusPayment statusPayment
   roomId        Int
-  room          Room            @relation(fields: [roomId], references: [id])
+  room          Room          @relation(fields: [roomId], references: [id])
   userId        Int
-  user          User            @relation(fields: [userId], references: [id])
-  MeterWater    MeterWater[]
-  MeterElectric MeterElectric[]
+  user          User          @relation(fields: [userId], references: [id])
+  adminId       Int
+  admin         Admin         @relation(fields: [adminId], references: [id])
 }
 
 enum statusPayment {
@@ -73,25 +76,25 @@ enum statusPayment {
 }
 
 model MeterWater {
-  id         Int      @id @default(autoincrement())
-  priceUnit  Int
-  unit       Int
-  createAt   DateTime @db.Date
-  userRoomId Int
-  UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
-  adminId    Int
-  admin      Admin    @relation(fields: [adminId], references: [id])
+  id        Int      @id @default(autoincrement())
+  priceUnit Int
+  unit      Int
+  createAt  DateTime @db.Date
+  roomId    Int
+  room      Room     @relation(fields: [roomId], references: [id])
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id])
 }
 
 model MeterElectric {
-  id         Int      @id @default(autoincrement())
-  priceUnit  Int
-  unit       Int
-  createAt   DateTime @db.Date
-  userRoomId Int
-  UserRoom   UserRoom @relation(fields: [userRoomId], references: [id])
-  adminId    Int
-  admin      Admin    @relation(fields: [adminId], references: [id])
+  id        Int      @id @default(autoincrement())
+  priceUnit Int
+  unit      Int
+  createAt  DateTime @db.Date
+  roomId    Int
+  room      Room     @relation(fields: [roomId], references: [id])
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id])
 }
 
 model Sumarize {
