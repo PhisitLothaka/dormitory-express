@@ -1,5 +1,37 @@
 const prisma = require("../model/prisma");
 
+exports.getSummarize = async (req, res, next) => {
+  try {
+    const summarize = await prisma.sumarize.findMany({
+      where: {
+        adminId: req.user.id,
+      },
+      include: {
+        room: {
+          select: {
+            name: true,
+            price: true,
+          },
+          //   include: {
+          //     userRoom: {
+          //       statusPayment: true,
+          //     },
+          //   },
+        },
+
+        user: {
+          select: {
+            firstName: true,
+          },
+        },
+      },
+    });
+    res.status(200).json({ summarize });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.createSummarize = async (req, res, next) => {
   try {
     const {
