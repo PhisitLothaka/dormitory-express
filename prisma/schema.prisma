@@ -79,6 +79,7 @@ model MeterWater {
   id        Int      @id @default(autoincrement())
   priceUnit Int
   unit      Int
+  unitUsed  Int?
   createAt  DateTime @db.Date
   roomId    Int
   room      Room     @relation(fields: [roomId], references: [id])
@@ -90,6 +91,7 @@ model MeterElectric {
   id        Int      @id @default(autoincrement())
   priceUnit Int
   unit      Int
+  unitUsed  Int?
   createAt  DateTime @db.Date
   roomId    Int
   room      Room     @relation(fields: [roomId], references: [id])
@@ -98,15 +100,18 @@ model MeterElectric {
 }
 
 model Sumarize {
-  id           Int      @id @default(autoincrement())
-  unitWater    Int
-  unitElectric Int
-  priceRoom    Int
-  timeReceipt  DateTime @db.Date
-  userId       Int
-  user         User     @relation(fields: [userId], references: [id])
-  roomId       Int
-  room         Room     @relation(fields: [roomId], references: [id])
-  adminId      Int
-  admin        Admin    @relation(fields: [adminId], references: [id])
+  id                Int      @id @default(autoincrement())
+  unitWater         Int
+  priceUnitWater    Int
+  unitElectric      Int
+  priceUnitElectric Int
+  priceRoom         Int
+  totalPrice        Int
+  timeReceipt       DateTime @default(now())
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id])
+  roomId            Int
+  room              Room     @relation(fields: [roomId], references: [id])
+  adminId           Int
+  admin             Admin    @relation(fields: [adminId], references: [id])
 }

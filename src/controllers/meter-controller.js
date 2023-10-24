@@ -1,13 +1,26 @@
 const prisma = require("../model/prisma");
+const { checkArrayMeterSchema } = require("../validators/meter-validator");
 
-exports.getMeterWater = async (req, res, next) => {
+exports.getMeterElectricByDate = async (req, res, next) => {
   try {
+    const { date } = req.params;
+    if (!date) {
+      return next(err);
+    }
+
     const roomAdmin = await prisma.userRoom.findMany({
       where: { adminId: req.user.id },
       include: {
         room: {
           include: {
-            MeterWater: true,
+            MeterElectric: {
+              where: {
+                createAt: {
+                  lte: new Date(date),
+                },
+              },
+              take: 1,
+            },
           },
         },
       },
@@ -21,27 +34,30 @@ exports.getMeterWater = async (req, res, next) => {
 
 exports.getMeterByDate = async (req, res, next) => {
   try {
-    const roomAdmin = await prisma.userRoom.findMany({
-      where: {
-        room: {
-          adminId: req.user.id,
-        },
-      },
-      include: {
-        room: true,
-      },
-    });
     const { date } = req.params;
     if (!date) {
       return next(err);
     }
-    const meterWater = await prisma.meterWater.findMany({
-      where: {
-        OR: [{ createAt: new Date(date) }, { userRoomId: roomAdmin.id }],
+
+    const roomAdmin = await prisma.userRoom.findMany({
+      where: { adminId: req.user.id },
+      include: {
+        room: {
+          include: {
+            MeterWater: {
+              where: {
+                createAt: {
+                  lte: new Date(date),
+                },
+              },
+              take: 1,
+            },
+          },
+        },
       },
     });
 
-    res.status(200).json({ meterWater });
+    res.status(200).json({ roomAdmin });
   } catch (err) {
     next(err);
   }
@@ -49,45 +65,34 @@ exports.getMeterByDate = async (req, res, next) => {
 
 exports.createMeterWater = async (req, res, next) => {
   try {
-    const { priceUnit, unit, createAt, roomId, adminId } = req.body;
+    const { value, error } = checkArrayMeterSchema.validate(req.body);
 
-    const createMeterWater = await prisma.meterWater.create({
-      data: {
-        priceUnit,
-        unit,
-        createAt,
-        roomId,
-        adminId,
-      },
+    if (error) {
+      next(error);
+    }
+
+    await prisma.meterWater.createMany({
+      data: value,
     });
-    res.status(201).json({ createMeterWater });
+
+    res.status(201).json({ message: "success" });
   } catch (err) {
-    console.log(
-      "🚀 ~ file: meter-controller.js:37 ~ exports.createMeterWater= ~ err:",
-      err
-    );
     next(err);
   }
 };
+
 exports.createMeterElectric = async (req, res, next) => {
   try {
-    const { priceUnit, unit, createAt, roomId, adminId } = req.body;
+    const { value, error } = checkArrayMeterSchema.validate(req.body);
 
-    const createMeterElectric = await prisma.meterElectric.create({
-      data: {
-        priceUnit,
-        unit,
-        createAt,
-        roomId,
-        adminId,
-      },
+    if (error) {
+      next(error);
+    }
+    const createMeterElectric = await prisma.meterElectric.createMany({
+      data: value,
     });
     res.status(201).json({ createMeterElectric });
   } catch (err) {
-    console.log(
-      "🚀 ~ file: meter-controller.js:37 ~ exports.createMeterWater= ~ err:",
-      err
-    );
     next(err);
   }
 };
