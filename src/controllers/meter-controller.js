@@ -61,14 +61,6 @@ exports.getMeterByDate = async (req, res, next) => {
       },
     });
 
-    const test = await prisma.userRoom.findMany({
-      where: { adminId: req.user.id },
-    });
-    console.log(
-      "🚀 ~ file: meter-controller.js:67 ~ exports.getMeterByDate= ~ test:",
-      test
-    );
-
     res.status(200).json({ roomAdmin });
   } catch (err) {
     next(err);
