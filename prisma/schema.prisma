@@ -108,6 +108,7 @@ model Sumarize {
   priceRoom         Int
   totalPrice        Int
   timeReceipt       DateTime @default(now())
+  checkPayment      Boolean  @default(false)
   userId            Int
   user              User     @relation(fields: [userId], references: [id])
   roomId            Int

@@ -35,6 +35,10 @@ exports.getMeterElectricByDate = async (req, res, next) => {
 exports.getMeterByDate = async (req, res, next) => {
   try {
     const { date } = req.params;
+    console.log(
+      "🚀 ~ file: meter-controller.js:38 ~ exports.getMeterByDate= ~ date:",
+      date
+    );
     if (!date) {
       return next(err);
     }
@@ -57,6 +61,14 @@ exports.getMeterByDate = async (req, res, next) => {
       },
     });
 
+    const test = await prisma.userRoom.findMany({
+      where: { adminId: req.user.id },
+    });
+    console.log(
+      "🚀 ~ file: meter-controller.js:67 ~ exports.getMeterByDate= ~ test:",
+      test
+    );
+
     res.status(200).json({ roomAdmin });
   } catch (err) {
     next(err);
@@ -71,7 +83,7 @@ exports.createMeterWater = async (req, res, next) => {
       next(error);
     }
 
-    await prisma.meterWater.createMany({
+    await prisma.meterWater.create({
       data: value,
     });
 
