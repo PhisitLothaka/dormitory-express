@@ -20,6 +20,9 @@ exports.getMeterElectricByDate = async (req, res, next) => {
                 },
               },
               take: 1,
+              orderBy: {
+                createAt: "desc",
+              },
             },
           },
         },
@@ -35,10 +38,6 @@ exports.getMeterElectricByDate = async (req, res, next) => {
 exports.getMeterByDate = async (req, res, next) => {
   try {
     const { date } = req.params;
-    console.log(
-      "🚀 ~ file: meter-controller.js:38 ~ exports.getMeterByDate= ~ date:",
-      date
-    );
     if (!date) {
       return next(err);
     }
@@ -50,11 +49,12 @@ exports.getMeterByDate = async (req, res, next) => {
           include: {
             MeterWater: {
               where: {
-                createAt: {
-                  lte: new Date(date),
-                },
+                createAt: { lte: new Date(date) },
               },
               take: 1,
+              orderBy: {
+                createAt: "desc",
+              },
             },
           },
         },
@@ -74,7 +74,10 @@ exports.createMeterWater = async (req, res, next) => {
     if (error) {
       next(error);
     }
-
+    value.adminId = req.user.id;
+    if (!value.unitUsed) {
+      delete value.unitUsed;
+    }
     await prisma.meterWater.create({
       data: value,
     });
@@ -88,10 +91,15 @@ exports.createMeterWater = async (req, res, next) => {
 exports.createMeterElectric = async (req, res, next) => {
   try {
     const { value, error } = checkArrayMeterSchema.validate(req.body);
+    console.log(
+      "🚀 ~ file: meter-controller.js:94 ~ exports.createMeterElectric= ~ value:",
+      value
+    );
 
     if (error) {
       next(error);
     }
+    value.adminId = req.user.id;
     const createMeterElectric = await prisma.meterElectric.createMany({
       data: value,
     });
