@@ -78,6 +78,10 @@ exports.createMeterWater = async (req, res, next) => {
     if (!value.unitUsed) {
       delete value.unitUsed;
     }
+    console.log(
+      "🚀 ~ file: meter-controller.js:73 ~ exports.createMeterWater= ~ value:",
+      value
+    );
     await prisma.meterWater.create({
       data: value,
     });
@@ -91,15 +95,16 @@ exports.createMeterWater = async (req, res, next) => {
 exports.createMeterElectric = async (req, res, next) => {
   try {
     const { value, error } = checkArrayMeterSchema.validate(req.body);
-    console.log(
-      "🚀 ~ file: meter-controller.js:94 ~ exports.createMeterElectric= ~ value:",
-      value
-    );
 
     if (error) {
       next(error);
     }
+
     value.adminId = req.user.id;
+    if (!value.unitUsed) {
+      delete value.unitUsed;
+    }
+
     const createMeterElectric = await prisma.meterElectric.createMany({
       data: value,
     });
