@@ -28,8 +28,15 @@ exports.getMeterElectricByDate = async (req, res, next) => {
         },
       },
     });
+    const roomMeter = roomAdmin.map((room, idx) => ({
+      roomId: room?.room?.id,
+      name: room?.room?.name,
+      priceUnit: room?.room?.MeterElectric[0]?.priceUnit,
+      unit: room?.room?.MeterElectric[0]?.unit,
+      unitUsed: room?.room?.MeterElectric[0]?.unitUsed,
+    }));
 
-    res.status(200).json({ roomAdmin });
+    res.status(200).json(roomMeter);
   } catch (err) {
     next(err);
   }
@@ -61,7 +68,15 @@ exports.getMeterByDate = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ roomAdmin });
+    const roomMeter = roomAdmin.map((room, idx) => ({
+      roomId: room?.room?.id,
+      name: room?.room?.name,
+      priceUnit: room?.room?.MeterWater[0]?.priceUnit,
+      unit: room?.room?.MeterWater[0]?.unit,
+      unitUsed: room?.room?.MeterWater[0]?.unitUsed,
+    }));
+
+    res.status(200).json(roomMeter);
   } catch (err) {
     next(err);
   }
