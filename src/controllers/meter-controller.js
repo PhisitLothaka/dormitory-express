@@ -1,4 +1,5 @@
 const prisma = require("../model/prisma");
+const createError = require("../utils/create-error");
 const { checkArrayMeterSchema } = require("../validators/meter-validator");
 
 exports.getMeterElectricByDate = async (req, res, next) => {
@@ -89,14 +90,13 @@ exports.createMeterWater = async (req, res, next) => {
     if (error) {
       next(error);
     }
+    if (req.role !== "ADMIN") {
+      next(createError("You are not an admin.", 400));
+    }
     value.adminId = req.user.id;
     if (!value.unitUsed) {
       delete value.unitUsed;
     }
-    console.log(
-      "🚀 ~ file: meter-controller.js:73 ~ exports.createMeterWater= ~ value:",
-      value
-    );
     await prisma.meterWater.create({
       data: value,
     });

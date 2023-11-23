@@ -7,6 +7,7 @@ const authRoute = require("./routes/auth-route");
 const roomRoute = require("./routes/room-route");
 const meterRoute = require("./routes/meter-route");
 const summarizeRoute = require("./routes/summarize-route");
+const userRoute = require("./routes/user-route");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/auth", authRoute);
 app.use("/room", roomRoute);
 app.use("/meter", meterRoute);
 app.use("/summarize", summarizeRoute);
+app.use("/user", userRoute);
 
 app.use(errorMiddleware);
 

@@ -85,7 +85,7 @@ exports.loginUser = async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRE }
     );
     delete user.password;
-    res.status(201).json({ accessToken, user });
+    res.status(201).json({ accessToken, user, role: "USER" });
   } catch (err) {
     next(err);
   }
@@ -119,12 +119,12 @@ exports.loginAdmin = async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRE }
     );
     delete user.password;
-    res.status(201).json({ accessToken, user });
+    res.status(201).json({ accessToken, user, role: "ADMIN" });
   } catch (err) {
     next(err);
   }
 };
 
 exports.getMe = (req, res, next) => {
-  res.status(200).json({ user: req.user });
+  res.status(200).json({ user: req.user, role: req.role });
 };
