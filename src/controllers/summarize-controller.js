@@ -38,6 +38,7 @@ exports.getSummarize = async (req, res, next) => {
         },
       },
     });
+    console.log("🚀 ~ exports.getSummarize= ~ roomUsers:", roomUsers);
 
     const summarize = roomUsers.map((room) => ({
       roomName: room?.room?.name,
@@ -61,6 +62,7 @@ exports.getSummarize = async (req, res, next) => {
       userId: room?.user?.id,
       roomId: room?.room?.id,
     }));
+    console.log("🚀 ~ summarize ~ summarize:", summarize);
 
     res.status(200).json(summarize);
   } catch (err) {
@@ -94,7 +96,6 @@ exports.createSummarize = async (req, res, next) => {
 
 exports.getMonthOnSummarize = async (req, res, next) => {
   try {
-    // console.log("test");
     const order = await prisma.sumarize.findMany({
       select: { timeReceipt: true },
       distinct: ["timeReceipt"],
@@ -109,17 +110,20 @@ exports.getMonthOnSummarize = async (req, res, next) => {
 exports.getSummarizeInMonth = async (req, res, next) => {
   try {
     const { month } = req.params;
+    console.log("🚀 ~ exports.getSummarizeInMonth= ~ month:", month);
 
-    const getMonthDates = (month) => {
-      if (month < 1 || month > 12) {
+    const getMonthDates = (MONTH) => {
+      if (MONTH < 1 || MONTH > 12) {
         return next(createError("Invalid month", 400));
       }
 
       const currentYear = new Date().getFullYear();
 
-      const startDate = new Date(`${currentYear}-${month}-01T00:00:00`);
+      const startDate = new Date(currentYear, MONTH, -29, 1, 0, 0, 0, 0);
 
-      const endDate = new Date(currentYear, month, 0, 23, 59, 59, 999);
+      console.log("🚀 ~ getMonthDates ~ startDate:", startDate);
+      const endDate = new Date(currentYear, MONTH, 0, 23, 59, 59, 999);
+      console.log("🚀 ~ getMonthDates ~ endDate:", endDate);
 
       const formattedStartDate =
         startDate.toISOString().split("T")[0] + " 0:0:0";
@@ -131,6 +135,8 @@ exports.getSummarizeInMonth = async (req, res, next) => {
       };
     };
     const { startDate, endDate } = getMonthDates(month);
+    console.log("🚀 ~ exports.getSummarizeInMonth= ~ endDate:", endDate);
+    console.log("🚀 ~ exports.getSummarizeInMonth= ~ startDate:", startDate);
 
     const result = await prisma.sumarize.findMany({
       where: {

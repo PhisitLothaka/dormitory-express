@@ -5,7 +5,7 @@ const checkArrayMeterSchema = Joi.object({
   unit: Joi.number().required(),
   createAt: Joi.date().required(),
   roomId: Joi.number().integer().positive().required(),
-  unitUsed: Joi.number().positive(),
+  unitUsed: Joi.number().positive().optional(),
 });
 
 exports.checkArrayMeterSchema = checkArrayMeterSchema;

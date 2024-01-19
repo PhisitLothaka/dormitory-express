@@ -85,18 +85,21 @@ exports.getMeterByDate = async (req, res, next) => {
 
 exports.createMeterWater = async (req, res, next) => {
   try {
-    const { value, error } = checkArrayMeterSchema.validate(req.body);
+    const data = req.body;
+    if (!data.unitUsed) {
+      delete data.unitUsed;
+    }
+    console.log("🚀 ~ exports.createMeterWater= ~ data:", data);
+    const { value, error } = checkArrayMeterSchema.validate(data);
 
     if (error) {
-      next(error);
+      return next(error);
     }
     if (req.role !== "ADMIN") {
-      next(createError("You are not an admin.", 400));
+      return next(createError("You are not an admin.", 400));
     }
     value.adminId = req.user.id;
-    if (!value.unitUsed) {
-      delete value.unitUsed;
-    }
+
     await prisma.meterWater.create({
       data: value,
     });
@@ -109,16 +112,16 @@ exports.createMeterWater = async (req, res, next) => {
 
 exports.createMeterElectric = async (req, res, next) => {
   try {
-    const { value, error } = checkArrayMeterSchema.validate(req.body);
-
+    const data = req.body;
+    if (!data.unitUsed) {
+      delete data.unitUsed;
+    }
+    const { value, error } = checkArrayMeterSchema.validate(data);
     if (error) {
-      next(error);
+      return next(error);
     }
 
     value.adminId = req.user.id;
-    if (!value.unitUsed) {
-      delete value.unitUsed;
-    }
 
     const createMeterElectric = await prisma.meterElectric.createMany({
       data: value,
